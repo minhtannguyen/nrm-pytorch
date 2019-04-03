@@ -116,7 +116,7 @@ class NRM(nn.Module):
             for name, layer in self.features.named_children():
                 if name.find('pool') != -1 and not name.find('average') != -1: # keep track of the maxpool state
                     F.interpolate(layer(x), scale_factor=2, mode='nearest')
-                    that.append(th.gt(x-F.interpolate(layer(x), scale_factor=2, mode='nearest'),0))
+                    that.append(th.ge(x-F.interpolate(layer(x), scale_factor=2, mode='nearest'),0))
                     x = layer(x)
                     if self.do_pn:
                         xbias = layer(xbias)
@@ -273,7 +273,7 @@ class NRM(nn.Module):
 
                 ahat_indx += 1
 
-            if prev_name.find('upsamplelayer') != -1 and not prev_name.find('avg') != -1:
+            if prev_name.find('upsample') != -1 and not prev_name.find('upaverage') != -1:
                 mu = mu * that[that_indx].type(th.FloatTensor).to(mu.get_device()) # mask the intermediate rendered images by the maxpool states in the forward step
                 if self.do_pn:
                     mupn = mupn * that[that_indx].type(th.FloatTensor).to(mu.get_device())
